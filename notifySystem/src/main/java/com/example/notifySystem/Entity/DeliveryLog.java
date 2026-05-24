@@ -19,7 +19,7 @@ public class DeliveryLog {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "notification_id")
-    private UUID notificationId;
+    private Notification notificationId;
 
     private int attemptNumber;
 

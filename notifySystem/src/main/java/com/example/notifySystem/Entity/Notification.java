@@ -19,7 +19,7 @@ public class Notification {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id")
-    private UUID userId;
+    private User userId;
 
     private String channel;
 
@@ -34,4 +34,9 @@ public class Notification {
     private LocalDateTime createdAt;
 
     private LocalDateTime updatedAt;
+
+    public Notification(User user){
+        this.userId = user;
+        this.createdAt = LocalDateTime.now();
+    }
 }

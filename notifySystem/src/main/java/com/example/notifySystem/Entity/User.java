@@ -25,4 +25,10 @@ public class User {
     private String pushToken;
 
     private LocalDateTime createdAt;
+
+    public User(String phone, String email, String pushToken){
+        this.phone = phone;
+        this.email = email;
+        this.pushToken = pushToken;
+    }
 }

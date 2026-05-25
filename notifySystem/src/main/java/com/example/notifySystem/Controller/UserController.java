@@ -1,7 +1,9 @@
 package com.example.notifySystem.Controller;
 
 import com.example.notifySystem.DTO.UserDTO;
+import com.example.notifySystem.Entity.Notification;
 import com.example.notifySystem.Entity.User;
+import com.example.notifySystem.Service.NotificationService;
 import com.example.notifySystem.Service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.apache.coyote.Response;
@@ -17,12 +19,12 @@ import org.springframework.web.bind.annotation.RestController;
 @RequiredArgsConstructor
 public class UserController {
     private final UserService userService;
-    private final
+    private final NotificationService notificationService;
 
     @PostMapping("/send")
     public ResponseEntity<UserDTO> sendNotify(@RequestBody UserDTO userDTO){
         User user = userService.createUser(userDTO.getPhone(),userDTO.getEmail(),userDTO.getPushToken());
-
+        notificationService.createNotification(userDTO.getChannel(), userDTO.getRecipient(), userDTO.getContent(), user);
         return ResponseEntity.status(HttpStatus.CREATED).body(userDTO);
     }
 }

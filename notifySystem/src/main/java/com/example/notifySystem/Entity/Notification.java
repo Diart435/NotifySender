@@ -1,5 +1,7 @@
 package com.example.notifySystem.Entity;
 
+import com.example.notifySystem.Enum.Channel;
+import com.example.notifySystem.Enum.NotificationStatus;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -21,13 +23,17 @@ public class Notification {
     @JoinColumn(name = "user_id")
     private User userId;
 
-    private String channel;
+    @Enumerated(EnumType.STRING)
+    @Column(name = "channel")
+    private Channel channel;
 
     private String recipient;
 
     private String content;
 
-    private String status;
+    @Enumerated(EnumType.STRING)
+    @Column(name = "status")
+    private NotificationStatus status;
 
     private int retryCount;
 

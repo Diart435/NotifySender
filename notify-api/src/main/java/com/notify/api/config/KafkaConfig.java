@@ -1,6 +1,6 @@
-package com.notify.config;
+package com.notify.api.config;
 
-import com.notify.JSON.KafkaJsonSerializer;
+import com.notify.api.JSON.KafkaJsonSerializer;
 import org.apache.kafka.clients.producer.ProducerConfig;
 import org.apache.kafka.common.serialization.StringSerializer;
 import org.springframework.context.annotation.Bean;

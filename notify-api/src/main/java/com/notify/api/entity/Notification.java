@@ -1,6 +1,6 @@
-package com.notify.entity;
+package com.notify.api.entity;
 
-import com.notify.enums.Channel;
+import com.notify.api.enums.Channel;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;

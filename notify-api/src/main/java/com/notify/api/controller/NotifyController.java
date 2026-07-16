@@ -1,9 +1,9 @@
-package com.notify.controller;
+package com.notify.api.controller;
 
 import com.notify.api.dto.UserDTO;
-import com.notify.entity.User;
-import com.notify.service.NotificationService;
-import com.notify.service.UserService;
+import com.notify.api.entity.User;
+import com.notify.api.service.NotificationService;
+import com.notify.api.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;

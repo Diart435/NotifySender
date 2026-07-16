@@ -1,8 +1,8 @@
-package com.notify.mapper;
+package com.notify.api.mapper;
 
+import com.notify.api.entity.Notification;
+import com.notify.api.entity.User;
 import com.notify.dto.NotifyKafkaDTO;
-import com.notify.entity.Notification;
-import com.notify.entity.User;
 import org.mapstruct.Mapper;
 
 import java.util.UUID;

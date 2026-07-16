@@ -1,4 +1,4 @@
-package com.notify.hander;
+package com.notify.api.hander;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;

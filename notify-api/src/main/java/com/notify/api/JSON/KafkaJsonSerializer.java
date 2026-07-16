@@ -1,4 +1,4 @@
-package com.notify.JSON;
+package com.notify.api.JSON;
 
 import org.apache.kafka.common.errors.SerializationException;
 import org.apache.kafka.common.serialization.Serializer;

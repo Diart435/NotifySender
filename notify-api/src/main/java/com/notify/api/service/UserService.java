@@ -1,7 +1,7 @@
-package com.notify.service;
+package com.notify.api.service;
 
-import com.notify.repository.UserRepository;
-import com.notify.entity.User;
+import com.notify.api.entity.User;
+import com.notify.api.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;

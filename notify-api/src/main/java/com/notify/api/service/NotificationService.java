@@ -1,13 +1,13 @@
-package com.notify.service;
+package com.notify.api.service;
 
-import com.notify.enums.Channel;
-import com.notify.mapper.NotificationMapper;
-import com.notify.mapper.UserMapper;
-import com.notify.repository.NotificationRepository;
+import com.notify.api.entity.Notification;
+import com.notify.api.entity.User;
+import com.notify.api.enums.Channel;
+import com.notify.api.mapper.NotificationMapper;
+import com.notify.api.mapper.UserMapper;
+import com.notify.api.repository.NotificationRepository;
 import com.notify.dto.Message;
 import com.notify.dto.NotifyKafkaDTO;
-import com.notify.entity.Notification;
-import com.notify.entity.User;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;

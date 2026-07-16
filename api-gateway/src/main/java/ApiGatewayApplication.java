@@ -1,0 +1,5 @@
+
+
+@SpringBootApplicaiton
+public class ApiGatewayApplication {
+}

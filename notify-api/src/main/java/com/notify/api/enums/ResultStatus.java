@@ -1,4 +1,4 @@
-package com.notify.enums;
+package com.notify.api.enums;
 
 public enum ResultStatus {
     SUCCESS,

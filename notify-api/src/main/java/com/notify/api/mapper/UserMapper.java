@@ -9,7 +9,7 @@ import org.mapstruct.Mapping;
 public interface UserMapper {
 
     @Mapping(target = "id", ignore = true)
-    @Mapping(target = "userId", source = "user")
+    @Mapping(target = "userId", source = "id")
     @Mapping(target = "retryCount", constant = "0")
     @Mapping(target = "updatedAt", ignore = true)
     Notification toNotification(User user);

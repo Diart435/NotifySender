@@ -30,5 +30,6 @@ public class User {
         this.phone = phone;
         this.email = email;
         this.pushToken = pushToken;
+        this.createdAt = LocalDateTime.now();
     }
 }

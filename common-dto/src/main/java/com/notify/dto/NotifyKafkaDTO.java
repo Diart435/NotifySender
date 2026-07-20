@@ -1,8 +1,11 @@
 package com.notify.dto;
 
+import lombok.Data;
+
 import java.time.LocalDateTime;
 import java.util.UUID;
 
+@Data
 public class NotifyKafkaDTO implements DedupKey {
     private UUID id;
 
@@ -25,5 +28,10 @@ public class NotifyKafkaDTO implements DedupKey {
     @Override
     public String getDedupKey(){
         return userId + ":" + channel + content.hashCode();
+    }
+
+    @Override
+    public String getPartitionKey(){
+        return userId.toString();
     }
 }

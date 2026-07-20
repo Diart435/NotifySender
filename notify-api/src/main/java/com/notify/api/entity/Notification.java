@@ -18,9 +18,8 @@ public class Notification {
     @GeneratedValue(strategy = GenerationType.UUID)
     private UUID id;
 
-    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id")
-    private User userId;
+    private UUID userId;
 
     @Enumerated(EnumType.STRING)
     @Column(name = "channel")
@@ -39,7 +38,7 @@ public class Notification {
     private LocalDateTime updatedAt;
 
     public Notification(User user){
-        this.userId = user;
+        this.userId = user.getId();
         this.createdAt = LocalDateTime.now();
     }
 }

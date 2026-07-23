@@ -11,12 +11,12 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 @Service
-@Slf4j
 @RequiredArgsConstructor
-public class NotifyEmailService {
-    private final DeliveryLogRepository deliveryLogRepository;
-    private final DeliveryMapper deliveryMapper;
-    private static int counter = 0;
+@Slf4j
+public class NotifyPushService {
+    private DeliveryLogRepository deliveryLogRepository;
+    private DeliveryMapper deliveryMapper;
+    private static int counter;
 
     @Transactional
     public void logSave(NotifyKafkaDTO notifyKafkaDTO){

@@ -2,9 +2,9 @@ package com.notify.api.entity;
 
 import com.notify.api.enums.Channel;
 import jakarta.persistence.*;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
+import org.hibernate.annotations.JdbcTypeCode;
+import org.hibernate.type.SqlTypes;
 
 import java.time.LocalDateTime;
 import java.util.UUID;
@@ -13,21 +13,22 @@ import java.util.UUID;
 @NoArgsConstructor
 @Setter
 @Getter
+@Builder
+@AllArgsConstructor
 public class Notification {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     private UUID id;
 
-    @JoinColumn(name = "user_id")
-    private UUID userId;
+    @Column(name = "user_id")
+    private String userId;
 
     @Enumerated(EnumType.STRING)
     @Column(name = "channel")
     private Channel channel;
 
-    private String recipient;
-
-    private String content;
+    @Column(name = "payload", nullable = false)
+    private String payload;
 
     private String status;
 
@@ -36,9 +37,4 @@ public class Notification {
     private LocalDateTime createdAt;
 
     private LocalDateTime updatedAt;
-
-    public Notification(User user){
-        this.userId = user.getId();
-        this.createdAt = LocalDateTime.now();
-    }
 }

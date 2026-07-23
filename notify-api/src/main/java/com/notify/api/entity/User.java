@@ -22,14 +22,11 @@ public class User {
 
     private String email;
 
-    private String pushToken;
-
     private LocalDateTime createdAt;
 
-    public User(String phone, String email, String pushToken){
+    public User(String phone, String email){
         this.phone = phone;
         this.email = email;
-        this.pushToken = pushToken;
         this.createdAt = LocalDateTime.now();
     }
 }

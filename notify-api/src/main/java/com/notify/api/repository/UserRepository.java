@@ -7,5 +7,5 @@ import java.util.Optional;
 import java.util.UUID;
 
 public interface UserRepository extends JpaRepository<User, UUID> {
-    Optional<User> findByPhoneOrEmailOrPushToken(String phone, String email, String pushToken);
+    Optional<User> findByPhoneOrEmail(String phone, String email);
 }

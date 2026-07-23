@@ -16,18 +16,17 @@ public class UserService {
     private final UserRepository userRepository;
 
     @Transactional
-    public User createUser(String phone, String email, String pushToken){
-        Optional<User> existing = userRepository.findByPhoneOrEmailOrPushToken(phone, email, pushToken);
+    public User createUser(String phone, String email){
+        Optional<User> existing = userRepository.findByPhoneOrEmail(phone, email);
         if(existing.isPresent()){
             User user = existing.get();
             if(phone != null) user.setPhone(phone);
             if(email != null) user.setEmail(email);
-            if(pushToken != null) user.setPushToken(pushToken);
             log.info("User updated");
             return user;
         }
         else{
-            User saved = userRepository.save(new User(phone, email, pushToken));
+            User saved = userRepository.save(new User(phone, email));
             log.info("User created: {}", saved.getId());
             return saved;
         }

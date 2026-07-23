@@ -1,10 +1,13 @@
 package com.notify.api.enums;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
+
 public enum Channel {
     EMAIL,
     SMS,
     PUSH;
 
+    @JsonCreator
     public static Channel fromString(String value) {
         if (value == null || value.isBlank()) {
             return null;

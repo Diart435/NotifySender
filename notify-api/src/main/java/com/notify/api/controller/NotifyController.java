@@ -1,30 +1,35 @@
 package com.notify.api.controller;
 
-import com.notify.api.dto.UserDTO;
-import com.notify.api.entity.User;
-import com.notify.api.service.NotificationService;
-import com.notify.api.service.UserService;
+import com.notify.api.dto.RequestEmailDTO;
+import com.notify.api.dto.RequestPushDTO;
+import com.notify.api.dto.RequestSmsDTO;
+import com.notify.api.service.NotificationCreateService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("/notify")
+@RequestMapping("/notify/send")
 @RequiredArgsConstructor
 public class NotifyController {
-    private final UserService userService;
-    private final NotificationService notificationService;
+    private final NotificationCreateService notificationService;
 
-    @PostMapping("/send")
-    public ResponseEntity<UserDTO> sendNotify(@RequestBody UserDTO userDTO){
-        User user = userService.createUser(userDTO.getPhone(),userDTO.getEmail(),userDTO.getPushToken());
-        notificationService.createNotification(userDTO.getChannel(), userDTO.getRecipient(), userDTO.getContent(), user);
-        return ResponseEntity.status(HttpStatus.CREATED).body(userDTO);
+    @PostMapping("/email")
+    public ResponseEntity<RequestEmailDTO> sendNotify(@RequestBody RequestEmailDTO emailDTO){
+        notificationService.create(emailDTO, "1");
+        return ResponseEntity.status(HttpStatus.CREATED).body(emailDTO);
     }
 
-    @GetMapping("/check")
-    public ResponseEntity<String> healthCheck(){
-        return ResponseEntity.status(HttpStatus.OK).body("healthy");
+    @PostMapping("/sms")
+    public ResponseEntity<RequestSmsDTO> sendNotify(@RequestBody RequestSmsDTO smsDTO){
+        notificationService.create(smsDTO, "2");
+        return ResponseEntity.status(HttpStatus.CREATED).body(smsDTO);
+    }
+
+    @PostMapping("/push")
+    public ResponseEntity<RequestPushDTO> sendNotify(@RequestBody RequestPushDTO pushDTO){
+        notificationService.create(pushDTO, "3");
+        return ResponseEntity.status(HttpStatus.CREATED).body(pushDTO);
     }
 }

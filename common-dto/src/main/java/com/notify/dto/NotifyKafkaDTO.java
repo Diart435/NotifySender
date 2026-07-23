@@ -9,13 +9,11 @@ import java.util.UUID;
 public class NotifyKafkaDTO implements DedupKey {
     private UUID id;
 
-    private UUID userId;
+    private String userId;
 
     private String channel;
 
-    private String recipient;
-
-    private String content;
+    private String payload;
 
     private String status;
 
@@ -27,7 +25,7 @@ public class NotifyKafkaDTO implements DedupKey {
 
     @Override
     public String getDedupKey(){
-        return userId + ":" + channel + content.hashCode();
+        return userId + ":" + channel + payload.hashCode();
     }
 
     @Override

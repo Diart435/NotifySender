@@ -18,15 +18,14 @@ public class User {
     @GeneratedValue(strategy = GenerationType.UUID)
     private UUID id;
 
-    private String phone;
+    @Column(unique = true, nullable = false)
+    private String username;
 
+    @Column(unique = true, nullable = false)
     private String email;
 
-    private LocalDateTime createdAt;
+    @Column(name = "password_hash", nullable = false)
+    private String passwordHash;
 
-    public User(String phone, String email){
-        this.phone = phone;
-        this.email = email;
-        this.createdAt = LocalDateTime.now();
-    }
+    private LocalDateTime createdAt;
 }

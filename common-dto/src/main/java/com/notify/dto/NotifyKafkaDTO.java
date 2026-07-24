@@ -30,6 +30,6 @@ public class NotifyKafkaDTO implements DedupKey {
 
     @Override
     public String getPartitionKey(){
-        return userId.toString();
+        return userId;
     }
 }

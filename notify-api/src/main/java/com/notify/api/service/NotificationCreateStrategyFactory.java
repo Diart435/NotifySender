@@ -42,7 +42,7 @@ public class NotificationCreateStrategyFactory {
             }
         }
 
-        log.info("✅ Всего зарегистрировано стратегий: {}", strategyMap.size());
+        log.info("Всего зарегистрировано стратегий: {}", strategyMap.size());
         if (strategyMap.isEmpty()) {
             log.error("НЕ ЗАРЕГИСТРИРОВАНО НИ ОДНОЙ СТРАТЕГИИ!");
         }

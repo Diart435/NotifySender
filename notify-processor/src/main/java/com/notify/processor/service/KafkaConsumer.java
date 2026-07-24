@@ -15,17 +15,22 @@ public class KafkaConsumer {
     private final NotifySmsService smsService;
     private final NotifyPushService pushService;
 
-    @KafkaListener(topics = "email", groupId = "email-group", containerFactory = "containerFactory")
-    public void consumeEmailChannel(ConsumerRecord<String, NotifyKafkaDTO> consumerRecord){
-        log.info("в разработке");
+    @KafkaListener(topics = "notifications", groupId = "notify-group", containerFactory = "containerFactory")
+    public void consumeNotifyChannel(ConsumerRecord<String, NotifyKafkaDTO> consumerRecord){
+        log.info("Пришло сообщение: {}", consumerRecord.value().getId());
     }
 
+    /*
     @KafkaListener(topics = "sms", groupId = "sms-group", containerFactory = "containerFactory")
     public void consumeSmsChannel(ConsumerRecord<String, NotifyKafkaDTO> consumerRecord){
-        log.info("в разработке");
+        log.info("Пришло сообщение: {}", consumerRecord.value().getId());
     }
     @KafkaListener(topics = "push", groupId = "push-group", containerFactory = "containerFactory")
     public void consumePushChannel(ConsumerRecord<String, NotifyKafkaDTO> consumerRecord){
-        log.info("в разработке");
+        log.info("Пришло сообщение: {}", consumerRecord.value().getId());
     }
+    @KafkaListener(topics = "email", groupId = "email-group", containerFactory = "containerFactory")
+    public void consumeEmailChannel(ConsumerRecord<String, NotifyKafkaDTO> consumerRecord){
+        log.info("Пришло сообщение: {}", consumerRecord.value().getId());
+    }*/
 }

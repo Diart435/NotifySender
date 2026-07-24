@@ -1,6 +1,6 @@
 package com.notify.processor.entity;
 
-import com.notify.processor.enums.NotificationStatus;
+import com.notify.dto.NotificationStatus;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;

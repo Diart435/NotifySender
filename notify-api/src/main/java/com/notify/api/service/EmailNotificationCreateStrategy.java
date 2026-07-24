@@ -4,6 +4,7 @@ import com.notify.api.dto.RequestEmailDTO;
 import com.notify.api.entity.Notification;
 import com.notify.api.enums.Channel;
 import com.notify.api.interfaces.NotificationCreateStrategy;
+import com.notify.dto.NotificationStatus;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 import tools.jackson.databind.ObjectMapper;
@@ -30,7 +31,7 @@ public class EmailNotificationCreateStrategy implements NotificationCreateStrate
                 .channel(Channel.EMAIL)
                 .createdAt(LocalDateTime.now())
                 .payload(payloadJSON)
-                .status("PENDING")
+                .status(NotificationStatus.PENDING)
                 .retryCount(0)
                 .updatedAt(LocalDateTime.now())
                 .build();

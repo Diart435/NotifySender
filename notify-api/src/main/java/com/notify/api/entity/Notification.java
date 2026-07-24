@@ -1,6 +1,7 @@
 package com.notify.api.entity;
 
 import com.notify.api.enums.Channel;
+import com.notify.dto.NotificationStatus;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -28,7 +29,9 @@ public class Notification {
     @Column(name = "payload", nullable = false)
     private String payload;
 
-    private String status;
+    @Enumerated(EnumType.STRING)
+    @Column(name = "status")
+    private NotificationStatus status;
 
     private int retryCount;
 

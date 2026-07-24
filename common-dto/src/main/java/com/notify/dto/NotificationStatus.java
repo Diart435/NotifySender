@@ -1,4 +1,4 @@
-package com.notify.processor.enums;
+package com.notify.dto;
 
 public enum NotificationStatus {
     PENDING,

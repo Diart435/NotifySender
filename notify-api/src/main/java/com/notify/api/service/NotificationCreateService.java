@@ -26,7 +26,7 @@ public class NotificationCreateService {
         NotificationCreateStrategy<BaseNotificationDTO> strategy = strategyFactory.getStrategy(request);
 
         Notification saved = notificationRepository.save(strategy.create(request, userId));
-        Message<NotifyKafkaDTO> message = new Message<>("notifications", notificationMapper.toKafkaDTO(saved));
+        Message<NotifyKafkaDTO> message = new Message<>(saved.getChannel().toString().toLowerCase(), notificationMapper.toKafkaDTO(saved));
         kafkaProducer.sendToKafka(message);
         log.info("Уведомление {} отправлено в топик {}", saved.getId(), message.topic());
     }

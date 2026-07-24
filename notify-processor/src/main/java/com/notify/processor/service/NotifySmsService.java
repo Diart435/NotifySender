@@ -2,7 +2,7 @@ package com.notify.processor.service;
 
 import com.notify.dto.NotifyKafkaDTO;
 import com.notify.processor.entity.DeliveryLog;
-import com.notify.processor.enums.NotificationStatus;
+import com.notify.dto.NotificationStatus;
 import com.notify.processor.mapper.DeliveryMapper;
 import com.notify.processor.repository.DeliveryLogRepository;
 import lombok.RequiredArgsConstructor;

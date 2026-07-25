@@ -14,8 +14,8 @@ import org.springframework.transaction.annotation.Transactional;
 @RequiredArgsConstructor
 @Slf4j
 public class NotifyPushService {
-    private DeliveryLogRepository deliveryLogRepository;
-    private DeliveryMapper deliveryMapper;
+    private final DeliveryLogRepository deliveryLogRepository;
+    private final DeliveryMapper deliveryMapper;
     private static int counter;
 
     @Transactional

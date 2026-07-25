@@ -11,6 +11,7 @@ import org.springframework.kafka.annotation.EnableKafka;
 import org.springframework.kafka.config.ConcurrentKafkaListenerContainerFactory;
 import org.springframework.kafka.core.ConsumerFactory;
 import org.springframework.kafka.core.DefaultKafkaConsumerFactory;
+import org.springframework.kafka.listener.ContainerProperties;
 import tools.jackson.databind.ObjectMapper;
 
 import java.util.HashMap;
@@ -27,7 +28,7 @@ public class KafkaConsumerConfig {
         Map<String, Object> confProperties = new HashMap<>();
         confProperties.put(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, bootstrapServers);
         confProperties.put(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class);
-
+        confProperties.put(ConsumerConfig.ENABLE_AUTO_COMMIT_CONFIG, false);
         DefaultKafkaConsumerFactory<String, NotifyKafkaDTO> factory = new DefaultKafkaConsumerFactory<>(confProperties);
         factory.setValueDeserializer(new KafkaJsonDeserializer<>(objectMapper, NotifyKafkaDTO.class));
 
@@ -39,6 +40,7 @@ public class KafkaConsumerConfig {
         var containerFactory = new ConcurrentKafkaListenerContainerFactory<String, NotifyKafkaDTO>();
         containerFactory.setConcurrency(1);
         containerFactory.setConsumerFactory(consumerFactory);
+        containerFactory.getContainerProperties().setAckMode(ContainerProperties.AckMode.MANUAL);
         return containerFactory;
     }
 }

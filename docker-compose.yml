@@ -30,7 +30,7 @@ services:
 
   postgres-processor:
     image: postgres:15
-    container_name: postgres-process
+    container_name: postgres-processor
     environment:
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: root
@@ -44,6 +44,22 @@ services:
       retries: 5
     volumes:
       - postgres-processor-data:/var/lib/postgresql/data
+    networks:
+      - notify-network
+
+  redis:
+    image: redis:7.4-alpine
+    container_name: notify-redis
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis-data:/data
+    restart: unless-stopped
+    healthcheck:
+      test: [ "CMD", "redis-cli", "ping" ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
     networks:
       - notify-network
 
@@ -99,6 +115,8 @@ services:
         condition: service_healthy
       kafka:
         condition: service_started
+      redis:
+        condition: service_healthy
     environment:
       SPRING_PROFILES_ACTIVE: docker
     restart: always
@@ -123,6 +141,7 @@ services:
 volumes:
   postgres-api-data:
   postgres-processor-data:
+  redis-data:
 
 networks:
   notify-network:

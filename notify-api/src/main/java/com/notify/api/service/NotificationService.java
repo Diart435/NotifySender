@@ -6,16 +6,20 @@ import com.notify.api.interfaces.NotificationCreateStrategy;
 import com.notify.api.mapper.NotificationMapper;
 import com.notify.api.repository.NotificationRepository;
 import com.notify.dto.Message;
+import com.notify.dto.NotificationStatus;
 import com.notify.dto.NotifyKafkaDTO;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
+import java.util.Optional;
+
 @Service
 @RequiredArgsConstructor
 @Slf4j
-public class NotificationCreateService {
+public class NotificationService {
     private final NotificationRepository notificationRepository;
     private final KafkaProducer kafkaProducer;
     private final NotificationMapper notificationMapper;
@@ -31,4 +35,14 @@ public class NotificationCreateService {
         log.info("Уведомление {} отправлено в топик {}", saved.getId(), message.topic());
     }
 
+    @Transactional
+    public void setStatus(NotifyKafkaDTO dto){
+        Optional<Notification> existing = notificationRepository.findById(dto.getId());
+        if(existing.isPresent()){
+            Notification notification = existing.get();
+            notification.setStatus(NotificationStatus.valueOf(dto.getStatus()));
+            notification.setRetryCount(dto.getRetryCount());
+            notification.setUpdatedAt(LocalDateTime.now());
+        }
+    }
 }

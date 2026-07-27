@@ -3,7 +3,7 @@ package com.notify.api.controller;
 import com.notify.api.dto.RequestEmailDTO;
 import com.notify.api.dto.RequestPushDTO;
 import com.notify.api.dto.RequestSmsDTO;
-import com.notify.api.service.NotificationCreateService;
+import com.notify.api.service.NotificationService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -16,7 +16,7 @@ import java.util.UUID;
 @RequestMapping("/notify/send")
 @RequiredArgsConstructor
 public class NotifyController {
-    private final NotificationCreateService notificationService;
+    private final NotificationService notificationService;
 
     @PostMapping("/email")
     public ResponseEntity<RequestEmailDTO> sendNotify(@Valid @RequestBody RequestEmailDTO emailDTO){

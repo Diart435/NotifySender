@@ -4,7 +4,7 @@ public enum NotificationStatus {
     PENDING,
     PROCESSING,
     SENT,
-    DELIVERED,
+    SUCCESS,
     RETRY,
     FAILED;
     public static NotificationStatus fromString(String value) {

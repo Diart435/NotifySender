@@ -18,7 +18,7 @@ public class DeliveryLog {
     @GeneratedValue(strategy = GenerationType.UUID)
     private UUID id;
 
-    private String notificationId;
+    private UUID notificationId;
 
     private int attemptNumber;
 

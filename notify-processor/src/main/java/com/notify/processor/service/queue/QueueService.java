@@ -17,7 +17,7 @@ import java.util.concurrent.*;
 public class QueueService {
     private final BlockingQueue<QueueItem> queue = new LinkedBlockingQueue<>(100);
     private final ExecutorService executor = Executors.newFixedThreadPool(3);
-    private final NotifyLogService logService;;
+    private final NotifyLogService logService;
     private final FeedbackSender fbSender;
 
     public QueueService(NotifyLogService logService, FeedbackSender fbSender) {  // ← Только sender!
@@ -27,7 +27,7 @@ public class QueueService {
 
     private final Map<String, RateLimiter> limiters = Map.of(
             "sms", RateLimiter.create(10.0),
-            "email", RateLimiter.create(5.0),
+            "email", RateLimiter.create(1.6),
             "push", RateLimiter.create(20.0)
     );
 

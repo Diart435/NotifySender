@@ -7,6 +7,10 @@ import lombok.Data;
 
 @Data
 public class RequestEmailDTO extends BaseNotificationDTO{
+    @NotBlank
+    private String login;
+    @NotBlank
+    private String targetUser;
     @Email
     @NotNull
     private String userEmail;

@@ -24,6 +24,8 @@ public class EmailNotificationCreateStrategy implements NotificationCreateStrate
         payload.put("targetEmail", dto.getTargetEmail());
         payload.put("title", dto.getTitle());
         payload.put("content", dto.getContent());
+        payload.put("login", dto.getLogin());
+        payload.put("targetUser", dto.getTargetUser());
         String payloadJSON = objectMapper.writeValueAsString(payload);
 
         return Notification.builder()

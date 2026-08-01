@@ -16,7 +16,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.UUID;
 
 @RestController
-@RequestMapping("/notify/send")
+@RequestMapping("/api/notify/send")
 @RequiredArgsConstructor
 public class NotifyController {
     private final NotificationService notificationService;

@@ -90,7 +90,8 @@ services:
   notify-api:
     build:
       context: .
-      dockerfile: notify-api/Dockerfile
+      args:
+        MODULE: notify-api
     depends_on:
       consul:
         condition: service_started
@@ -107,7 +108,8 @@ services:
   notify-processor:
     build:
       context: .
-      dockerfile: notify-processor/Dockerfile
+      args:
+        MODULE: notify-processor
     depends_on:
       consul:
         condition: service_started
@@ -126,7 +128,8 @@ services:
   api-gateway:
     build:
       context: .
-      dockerfile: api-gateway/Dockerfile
+      args:
+        MODULE: api-gateway
     container_name: api-gateway
     ports:
       - "8080:8080"

@@ -1,11 +1,11 @@
-package com.notify.api.unit;
+package com.notify.api.test.unit;
 
 import com.notify.api.JSON.KafkaJsonDeserializer;
 import com.notify.api.dto.RequestSmsDTO;
 import com.notify.api.entity.Notification;
 import com.notify.api.enums.Channel;
 import com.notify.api.repository.NotificationRepository;
-import com.notify.api.service.NotificationCreateService;
+import com.notify.api.service.NotificationService;
 import com.notify.dto.NotificationStatus;
 import com.notify.dto.NotifyKafkaDTO;
 import org.apache.kafka.clients.consumer.Consumer;
@@ -47,7 +47,7 @@ class NotificationCreateServiceTest {
     static KafkaContainer kafka = new KafkaContainer(DockerImageName.parse("apache/kafka:latest"));
 
     @Autowired
-    private NotificationCreateService notificationCreateService;
+    private NotificationService notificationCreateService;
 
     @Autowired
     private NotificationRepository notificationRepository;

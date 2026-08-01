@@ -13,7 +13,7 @@ import org.springframework.web.client.RestClient;
 @Slf4j
 public class EmailUnisenderProvider extends BaseEmailProvider{
     private final RestClient restClient;
-    @Value("${email.unisender.api.key:#{null}}")
+    @Value("${email.unisender.api.key}")
     private String apiKey;
     private static boolean enabled = false;
     public EmailUnisenderProvider(){

@@ -14,7 +14,7 @@ import org.springframework.web.client.RestClient;
 public class SmsRuProvider extends BaseSmsProvider{
     private final RestClient restClient;
 
-    @Value("${smsru.provider.api.key:#{null}}")
+    @Value("${smsru.provider.api.key}")
     private String apiKey;
     private static boolean enabled = false;
     public SmsRuProvider(){

@@ -13,9 +13,9 @@ services:
     image: postgres:15
     container_name: postgres-api
     environment:
-      POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: root
-      POSTGRES_DB: notify_api_db
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: ${API_DB}
     ports:
       - "5433:5432"
     healthcheck:
@@ -32,9 +32,9 @@ services:
     image: postgres:15
     container_name: postgres-processor
     environment:
-      POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: root
-      POSTGRES_DB: notify_processor_db
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: ${PROCESS_DB}
     ports:
       - "5434:5432"
     healthcheck:

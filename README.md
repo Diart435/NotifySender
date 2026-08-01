@@ -26,11 +26,15 @@ graph TD
     C --> H
 ```
 # Запуск
-## 1. Запустить систему
+## 1. Создать файл .env по примеру .env.example
+## 2. (Опционально для Push канала)
+Переименовать JSON-файл Firebase Admin SDK private key в firebase-service-account.json и переместить в notify-processor/src/main/resources/
+## 3. Запустить систему
 ```bash
 docker-compose up -d
 ```
-## 2. Отправить запрос
+Первый запуск длится ~400 секунд, после 30-40 секунд
+## 4. Отправить запрос
 ```bash
 curl -X POST http://localhost:8080/api/notify/sms \
   -H "Content-Type: application/json" \

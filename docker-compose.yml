@@ -121,6 +121,8 @@ services:
         condition: service_healthy
     environment:
       SPRING_PROFILES_ACTIVE: docker
+      SMSRU_API_KEY: ${SMSRU_API_KEY}
+      UNISENDER_API_KEY: ${UNISENDER_API_KEY}
     restart: always
     networks:
       - notify-network

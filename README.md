@@ -38,5 +38,6 @@ docker-compose up -d
 ```bash
 curl -X POST http://localhost:8080/api/notify/sms \
   -H "Content-Type: application/json" \
-  -d '{"userPhone": "+79991234567", "targetPhone": "+79992345678", "content": "Hello, World!", "senderId": "sender"}'
+  -H "X-API-Key: <API-ключ>" \
+  -d '{"userPhone": "+79991234567", "targetPhone": "+79992345678", "content": "Hello, World!"}'
 ```

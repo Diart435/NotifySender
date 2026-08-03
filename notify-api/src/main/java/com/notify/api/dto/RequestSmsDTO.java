@@ -12,6 +12,4 @@ public class RequestSmsDTO extends BaseNotificationDTO{
     @Pattern(regexp = "([+]{0,1}[7-8]\\d{10})?", message = "Некорректный формат телефона")
     @NotBlank
     private String targetPhone;
-    @NotBlank
-    private String senderId;
 }

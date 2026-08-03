@@ -22,7 +22,6 @@ public class SmsNotificationCreateStrategy implements NotificationCreateStrategy
         Map<String, Object> payload = new HashMap<>();
         payload.put("userPhone", dto.getUserPhone());
         payload.put("targetPhone", dto.getTargetPhone());
-        payload.put("senderId", dto.getSenderId());
         payload.put("content", dto.getContent());
         String payloadJSON = objectMapper.writeValueAsString(payload);
 

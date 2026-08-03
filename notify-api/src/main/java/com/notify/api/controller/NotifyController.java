@@ -27,7 +27,8 @@ public class NotifyController {
     )
     @ApiResponses(value = {
             @ApiResponse(responseCode = "201", description = "Notification sent"),
-            @ApiResponse(responseCode = "400", description = "Bad request")
+            @ApiResponse(responseCode = "400", description = "Bad request"),
+            @ApiResponse(responseCode = "401", description = "Unauthorized")
     })
     @PostMapping("/email")
     public ResponseEntity<Void> sendNotify(@Valid @RequestBody RequestEmailDTO emailDTO){
@@ -41,7 +42,8 @@ public class NotifyController {
     )
     @ApiResponses(value = {
             @ApiResponse(responseCode = "201", description = "Notification sent"),
-            @ApiResponse(responseCode = "400", description = "Bad request")
+            @ApiResponse(responseCode = "400", description = "Bad request"),
+            @ApiResponse(responseCode = "401", description = "Unauthorized")
     })
     @PostMapping("/sms")
     public ResponseEntity<Void> sendNotify(@Valid @RequestBody RequestSmsDTO smsDTO){
@@ -55,7 +57,8 @@ public class NotifyController {
     )
     @ApiResponses(value = {
             @ApiResponse(responseCode = "201", description = "Notification sent"),
-            @ApiResponse(responseCode = "400", description = "Bad request")
+            @ApiResponse(responseCode = "400", description = "Bad request"),
+            @ApiResponse(responseCode = "401", description = "Unauthorized")
     })
     @PostMapping("/push")
     public ResponseEntity<Void> sendNotify(@Valid @RequestBody RequestPushDTO pushDTO){

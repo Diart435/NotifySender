@@ -29,6 +29,11 @@ public class KafkaConsumerConfig {
         confProperties.put(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, bootstrapServers);
         confProperties.put(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class);
         confProperties.put(ConsumerConfig.ENABLE_AUTO_COMMIT_CONFIG, false);
+        confProperties.put(ConsumerConfig.MAX_POLL_INTERVAL_MS_CONFIG, 600000);
+        confProperties.put(ConsumerConfig.MAX_POLL_RECORDS_CONFIG, 150);
+        confProperties.put(ConsumerConfig.REQUEST_TIMEOUT_MS_CONFIG, 120000);
+        confProperties.put(ConsumerConfig.HEARTBEAT_INTERVAL_MS_CONFIG, 10000);
+        confProperties.put(ConsumerConfig.SESSION_TIMEOUT_MS_CONFIG, 60000);
         DefaultKafkaConsumerFactory<String, NotifyKafkaDTO> factory = new DefaultKafkaConsumerFactory<>(confProperties);
         factory.setValueDeserializer(new KafkaJsonDeserializer<>(objectMapper, NotifyKafkaDTO.class));
 

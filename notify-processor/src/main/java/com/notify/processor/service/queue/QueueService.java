@@ -15,30 +15,40 @@ import java.util.concurrent.*;
 @Service
 @Slf4j
 public class QueueService {
-    private final BlockingQueue<QueueItem> queue = new LinkedBlockingQueue<>(100);
-    private final ExecutorService executor = Executors.newFixedThreadPool(3);
     private final NotifyLogService logService;
     private final FeedbackSender fbSender;
 
-    public QueueService(NotifyLogService logService, FeedbackSender fbSender) {  // ← Только sender!
+    public QueueService(NotifyLogService logService, FeedbackSender fbSender) {
         this.logService = logService;
         this.fbSender = fbSender;
     }
 
-    private final Map<String, RateLimiter> limiters = Map.of(
-            "sms", RateLimiter.create(10.0),
-            "email", RateLimiter.create(1.6),
-            "push", RateLimiter.create(20.0)
+    private final Map<String, BlockingQueue<QueueItem>> queues = Map.of(
+            "sms", new LinkedBlockingQueue<>(100),
+            "email", new LinkedBlockingQueue<>(100),
+            "push", new LinkedBlockingQueue<>(100)
     );
+
+    private final Map<String, RateLimiter> limiters = Map.of(
+            "sms", RateLimiter.create(35.0),
+            "email", RateLimiter.create(1.0),
+            "push", RateLimiter.create(100.0)
+    );
+
+    private final ExecutorService virtualExecutor = Executors.newVirtualThreadPerTaskExecutor();
 
     @PostConstruct
     public void startWorkers() {
-        for (int i = 0; i < 3; i++) {
-            executor.submit(this::worker);
+        for(String channel : queues.keySet()) {
+            BlockingQueue<QueueItem> queue = queues.get(channel);
+            for (int i = 0; i < 100; i++) {
+                virtualExecutor.submit(() -> worker(queue, channel));
+            }
         }
     }
 
-    public void enqueue(NotifyKafkaDTO dto, NotificationProcessor processor) throws InterruptedException {
+    public void enqueue(String channel, NotifyKafkaDTO dto, NotificationProcessor processor) throws InterruptedException {
+        BlockingQueue<QueueItem> queue = getQueue(channel);
         boolean offered = queue.offer(new QueueItem(dto, processor), 5, TimeUnit.SECONDS);
         if (!offered) {
             log.error("Очередь переполнена, сообщение {} не добавлено", dto.getId());
@@ -46,12 +56,12 @@ public class QueueService {
         }
     }
 
-    private void worker() {
+    private void worker(BlockingQueue<QueueItem> queue, String channel) {
         while (true) {
             QueueItem item = null;
             try {
                 item = queue.take();
-                RateLimiter limiter = limiters.get(item.getProcessor().getProcess());
+                RateLimiter limiter = limiters.get(channel);
                 limiter.acquire();
                 item.getProcessor().process(item.getDto());
             } catch (InterruptedException e) {
@@ -79,5 +89,12 @@ public class QueueService {
                 }
             }
         }
+    }
+    private BlockingQueue<QueueItem> getQueue(String channel){
+        BlockingQueue<QueueItem> queue = queues.get(channel);
+        if(queue == null){
+            throw new IllegalArgumentException("Unknown channel: " + channel);
+        }
+        return queue;
     }
 }

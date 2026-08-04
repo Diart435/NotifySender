@@ -99,6 +99,8 @@ services:
         condition: service_healthy
       kafka:
         condition: service_started
+      redis:
+        condition: service_healthy
     environment:
       SPRING_PROFILES_ACTIVE: docker
       ADMIN_API_KEY: ${ADMIN_API_KEY}

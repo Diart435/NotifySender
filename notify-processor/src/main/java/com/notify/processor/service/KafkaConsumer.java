@@ -45,7 +45,7 @@ public class KafkaConsumer {
                 NotifyKafkaDTO dto = consumerRecord.value();
                 log.info("Пришло сообщение: {}", consumerRecord.value().getId());
                 logService.logSave(dto);
-                queue.enqueue(dto, processor);
+                queue.enqueue(channel, dto, processor);
             }
             deduplicationService.markAsProcessed(dedupKey);
             ack.acknowledge();

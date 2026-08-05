@@ -19,6 +19,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.kafka.core.DefaultKafkaConsumerFactory;
 import org.springframework.kafka.core.KafkaTemplate;
+import org.springframework.kafka.test.context.EmbeddedKafka;
 import org.springframework.kafka.test.utils.KafkaTestUtils;
 import org.springframework.test.context.DynamicPropertyRegistry;
 import org.springframework.test.context.DynamicPropertySource;
@@ -37,6 +38,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 @SpringBootTest
 @Testcontainers
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
+@EmbeddedKafka(topics = {"sms", "push", "email"})
 class NotificationCreateServiceTest {
 
     static PostgreSQLContainer<?> postgres = new PostgreSQLContainer<>("postgres:15")
@@ -84,8 +86,6 @@ class NotificationCreateServiceTest {
         request.setUserPhone("+79991234567");
         request.setTargetPhone("+79991236567");
         request.setContent("Hello, World!");
-        request.setSenderId(testUserId);
-
         notificationCreateService.create(request, testUserId);
 
         Notification saved = notificationRepository.findAll().stream()
@@ -110,8 +110,7 @@ class NotificationCreateServiceTest {
         factory.setValueDeserializer(new KafkaJsonDeserializer<>(objectMapper, NotifyKafkaDTO.class));
 
         try (Consumer<String, NotifyKafkaDTO> consumer = factory.createConsumer()) {
-            consumer.subscribe(java.util.List.of("notifications"));
-            consumer.poll(Duration.ofMillis(100));
+            consumer.subscribe(java.util.List.of("sms"));
 
             ConsumerRecords<String, NotifyKafkaDTO> records = KafkaTestUtils.getRecords(consumer, Duration.ofSeconds(5));
             assertThat(records).isNotEmpty();

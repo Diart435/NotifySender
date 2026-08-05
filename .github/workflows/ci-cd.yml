@@ -30,4 +30,13 @@ jobs:
 
       - name: Docker deploy
         run: |
+          cat > .env << EOF
+          POSTGRES_USER=${{secrets.POSTGRES_USER}}
+          POSTGRES_PASSWORD=${{secrets.POSTGRES_PASSWORD}}
+          API_DB=${{secrets.API_DB}}
+          PROCESS_DB=${{secrets.PROCESS_DB}}
+          SMSRU_API_KEY=${{secrets.SMSRU_API_KEY}}
+          UNISENDER_API_KEY=${{secrets.UNISENDER_API_KEY}}
+          ADMIN_API_KEY=${{secrets.ADMIN_API_KEY}}
+          EOF
           docker compose up -d --build

@@ -26,7 +26,18 @@ graph TD
     C --> H
 ```
 # Запуск
-## 1. Создать файл .env по примеру .env.example
+## 1. Создать файл .env по примеру .env.example, затем заполнить значения
+```bash
+cat > .env << EOF
+POSTGRES_USER=
+POSTGRES_PASSWORD=
+API_DB=
+PROCESS_DB=
+SMSRU_API_KEY=
+UNISENDER_API_KEY=
+ADMIN_API_KEY=
+EOF
+```
 ## 2. (Опционально для Push канала)
 Переименовать JSON-файл Firebase Admin SDK private key в firebase-service-account.json и переместить в notify-processor/src/main/resources/
 ## 3. Запустить систему

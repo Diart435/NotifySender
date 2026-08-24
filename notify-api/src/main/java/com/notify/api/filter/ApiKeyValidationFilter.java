@@ -24,7 +24,7 @@ public class ApiKeyValidationFilter implements Filter {
     public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) throws IOException, ServletException {
         HttpServletRequest httpRequest = (HttpServletRequest) request;
         String apiKey = httpRequest.getHeader("X-API-Key");
-        boolean isValid = adminApiKey.equals(apiKey) || userService.isApiKey(encoder.encode(apiKey));
+        boolean isValid = adminApiKey.equals(apiKey) || userService.validateKey(apiKey);
         if(!isValid){
             sendUnauthorized(response, "API-key doesn't exist");
             return;

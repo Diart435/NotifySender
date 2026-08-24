@@ -13,8 +13,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.UUID;
-
 @RestController
 @RequestMapping("/api/notify/send")
 @RequiredArgsConstructor
@@ -31,8 +29,8 @@ public class NotifyController {
             @ApiResponse(responseCode = "401", description = "Unauthorized")
     })
     @PostMapping("/email")
-    public ResponseEntity<Void> sendNotify(@Valid @RequestBody RequestEmailDTO emailDTO){
-        notificationService.create(emailDTO, UUID.randomUUID().toString());
+    public ResponseEntity<Void> sendNotify(@RequestHeader("X-API-Key") String apiKey, @Valid @RequestBody RequestEmailDTO emailDTO){
+        notificationService.create(emailDTO, apiKey);
         return ResponseEntity.status(HttpStatus.CREATED).build();
     }
 
@@ -46,8 +44,8 @@ public class NotifyController {
             @ApiResponse(responseCode = "401", description = "Unauthorized")
     })
     @PostMapping("/sms")
-    public ResponseEntity<Void> sendNotify(@Valid @RequestBody RequestSmsDTO smsDTO){
-        notificationService.create(smsDTO, UUID.randomUUID().toString());
+    public ResponseEntity<Void> sendNotify(@RequestHeader("X-API-Key") String apiKey, @Valid @RequestBody RequestSmsDTO smsDTO){
+        notificationService.create(smsDTO, apiKey);
         return ResponseEntity.status(HttpStatus.CREATED).build();
     }
 
@@ -61,8 +59,8 @@ public class NotifyController {
             @ApiResponse(responseCode = "401", description = "Unauthorized")
     })
     @PostMapping("/push")
-    public ResponseEntity<Void> sendNotify(@Valid @RequestBody RequestPushDTO pushDTO){
-        notificationService.create(pushDTO, UUID.randomUUID().toString());
+    public ResponseEntity<Void> sendNotify(@RequestHeader("X-API-Key") String apiKey, @Valid @RequestBody RequestPushDTO pushDTO){
+        notificationService.create(pushDTO, apiKey);
         return ResponseEntity.status(HttpStatus.CREATED).build();
     }
 }

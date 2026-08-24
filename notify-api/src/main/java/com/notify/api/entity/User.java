@@ -29,6 +29,9 @@ public class User {
 
     private LocalDateTime createdAt;
 
-    @Column(name = "api_key", nullable = false)
+    @Column(name = "api_key", unique = true, nullable = false)
     private String apiKey;
+
+    @Column(name = "api_key_lookup", unique = true, nullable = false)
+    private String apiKeyLookup;
 }

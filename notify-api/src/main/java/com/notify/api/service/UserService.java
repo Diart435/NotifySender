@@ -62,4 +62,10 @@ public class UserService {
         userRepository.save(user);
         return apiKey;
     }
+
+    @Transactional(readOnly = true)
+    public User getUserByApiKey(String rawKey){
+        Optional<User> existing = userRepository.findByApiKeyLookup(DigestUtils.sha256Hex(rawKey));
+        return existing.orElse(null);
+    }
 }

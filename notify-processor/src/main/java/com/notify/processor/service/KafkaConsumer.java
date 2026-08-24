@@ -40,6 +40,7 @@ public class KafkaConsumer {
             if(!deduplicationService.isDuplicate(dedupKey)) {
                 NotifyKafkaDTO dto = record.value();
                 queueService.enqueue(channel, dto, factory.getProcessor(channel), ack);
+                deduplicationService.markAsProcessed(dedupKey);
                 log.debug("Сообщение {} добавлено в очередь {}", dto.getId(), channel);
             }
             else {
@@ -47,6 +48,7 @@ public class KafkaConsumer {
                 log.debug("Дубликат {} пропущен", record.value().getId());
             }
         } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
             log.info("Ошибка в воркере");
         }
     }

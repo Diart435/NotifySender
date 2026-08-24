@@ -46,6 +46,7 @@ public class KafkaConsumerConfig {
         containerFactory.setConcurrency(1);
         containerFactory.setConsumerFactory(consumerFactory);
         containerFactory.getContainerProperties().setAckMode(ContainerProperties.AckMode.MANUAL);
+        containerFactory.getContainerProperties().setAsyncAcks(true);
         return containerFactory;
     }
 }

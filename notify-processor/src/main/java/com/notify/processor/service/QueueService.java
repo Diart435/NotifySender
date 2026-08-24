@@ -28,19 +28,38 @@ public class QueueService {
     );
     @PostConstruct
     public void init(){
-        for(String c : queues.keySet()){
-            BlockingQueue<QueueItem> queue = queues.get(c);
+        for(String channel : queues.keySet()){
+            BlockingQueue<QueueItem> queue = queues.get(channel);
             for(int i = 0; i < 100; i++) {
-                virtualExecutor.submit(() -> worker(queue, c));
+                virtualExecutor.submit(() -> startWorker(queue, channel));
             }
         }
+    }
+    private void startWorker(BlockingQueue<QueueItem> queue, String channel) {
+        virtualExecutor.submit(() -> {
+            try {
+                worker(queue, channel);
+            } catch (InterruptedException e) {
+                Thread.currentThread().interrupt();
+                log.warn("Воркер {} прерван, перезапускаем...", channel);
+                if (!Thread.currentThread().isInterrupted()) {
+                    startWorker(queue, channel);
+                }
+            } catch (Exception e) {
+                log.error("Воркер {} упал, перезапускаем", channel, e);
+                startWorker(queue, channel);
+            }
+        });
     }
 
     public void enqueue(String channel, NotifyKafkaDTO dto, NotificationProcessor processor, Acknowledgment ack) throws InterruptedException{
         BlockingQueue<QueueItem> queue = queues.get(channel);
-        queue.offer(new QueueItem(dto, processor, ack), 3, TimeUnit.SECONDS);
+        boolean offered = queue.offer(new QueueItem(dto, processor, ack), 3, TimeUnit.SECONDS);
+        if(!offered){
+            log.info("Канал {} переполнен", channel);
+        }
     }
-    private void worker(BlockingQueue<QueueItem> queue, String channel){
+    private void worker(BlockingQueue<QueueItem> queue, String channel) throws InterruptedException {
         while(true){
             QueueItem item = null;
             try{
@@ -48,7 +67,7 @@ public class QueueService {
                 int limit = limits.get(channel);
 
                 while (!rateLimiter.tryAcquire(channel, limit, 2)) {
-                    Thread.sleep(50);
+                    Thread.sleep(500);
                 }
                 item.getProcessor().process(item.getDto());
 
@@ -59,8 +78,7 @@ public class QueueService {
             } catch (InterruptedException e) {
                 Thread.currentThread().interrupt();
                 log.info("Воркер {} приостановил работу", channel);
-                virtualExecutor.submit(() -> worker(queue, channel));
-                return;
+                throw e;
             }
             catch (Exception e){
                 log.error("Ошибка обработки {} сообщения {}", channel, item.getDto().getId(), e);

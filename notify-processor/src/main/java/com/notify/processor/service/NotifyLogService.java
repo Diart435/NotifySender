@@ -12,6 +12,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.Optional;
+import java.util.concurrent.atomic.AtomicInteger;
 
 @Service
 @Slf4j
@@ -19,11 +20,11 @@ import java.util.Optional;
 public class NotifyLogService {
     private final DeliveryLogRepository deliveryLogRepository;
     private final DeliveryMapper deliveryMapper;
-    private int counter = 0;
+    private static final AtomicInteger counter = new AtomicInteger(0);
 
     @Transactional
     public void logSave(NotifyKafkaDTO dto){
-        counter++;
+        counter.incrementAndGet();
         DeliveryLog dLog = deliveryMapper.toLog(dto);
         dLog.setResult(NotificationStatus.PROCESSING);
         dto.setStatus(NotificationStatus.PROCESSING.toString());

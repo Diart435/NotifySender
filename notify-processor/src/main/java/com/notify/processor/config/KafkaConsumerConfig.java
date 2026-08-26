@@ -3,6 +3,7 @@ package com.notify.processor.config;
 import com.notify.dto.NotifyKafkaDTO;
 import com.notify.processor.JSON.KafkaJsonDeserializer;
 import org.apache.kafka.clients.consumer.ConsumerConfig;
+import org.apache.kafka.clients.consumer.RoundRobinAssignor;
 import org.apache.kafka.common.serialization.StringDeserializer;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
@@ -29,11 +30,13 @@ public class KafkaConsumerConfig {
         confProperties.put(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, bootstrapServers);
         confProperties.put(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class);
         confProperties.put(ConsumerConfig.ENABLE_AUTO_COMMIT_CONFIG, false);
-        confProperties.put(ConsumerConfig.MAX_POLL_INTERVAL_MS_CONFIG, 600000);
-        confProperties.put(ConsumerConfig.MAX_POLL_RECORDS_CONFIG, 150);
-        confProperties.put(ConsumerConfig.REQUEST_TIMEOUT_MS_CONFIG, 120000);
-        confProperties.put(ConsumerConfig.HEARTBEAT_INTERVAL_MS_CONFIG, 10000);
-        confProperties.put(ConsumerConfig.SESSION_TIMEOUT_MS_CONFIG, 60000);
+        confProperties.put(ConsumerConfig.MAX_POLL_INTERVAL_MS_CONFIG, 300000);
+        confProperties.put(ConsumerConfig.MAX_POLL_RECORDS_CONFIG, 30);
+        confProperties.put(ConsumerConfig.REQUEST_TIMEOUT_MS_CONFIG, 40000);
+        confProperties.put(ConsumerConfig.HEARTBEAT_INTERVAL_MS_CONFIG, 3000);
+        confProperties.put(ConsumerConfig.SESSION_TIMEOUT_MS_CONFIG, 30000);
+        confProperties.put(ConsumerConfig.FETCH_MAX_WAIT_MS_CONFIG, 100);
+        confProperties.put(ConsumerConfig.PARTITION_ASSIGNMENT_STRATEGY_CONFIG, RoundRobinAssignor.class.getName());
         DefaultKafkaConsumerFactory<String, NotifyKafkaDTO> factory = new DefaultKafkaConsumerFactory<>(confProperties);
         factory.setValueDeserializer(new KafkaJsonDeserializer<>(objectMapper, NotifyKafkaDTO.class));
 

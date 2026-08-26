@@ -10,8 +10,8 @@ import java.time.Duration;
 @RequiredArgsConstructor
 public class DeduplicationService {
     private final RedisTemplate<String, String> redisTemplate;
-    private static Duration TIME_WINDOW = Duration.ofSeconds(15);
-    private static String KEY = "dedup:key:";
+    private static final Duration TIME_WINDOW = Duration.ofSeconds(30);
+    private static final String KEY = "dedup:key:";
 
     public boolean isDuplicate(String key){
         return redisTemplate.hasKey(KEY + key);
@@ -23,5 +23,9 @@ public class DeduplicationService {
                 String.valueOf(System.currentTimeMillis()),
                 TIME_WINDOW
         );
+    }
+
+    public void updateTTL(String key){
+        redisTemplate.expire(key, TIME_WINDOW);
     }
 }

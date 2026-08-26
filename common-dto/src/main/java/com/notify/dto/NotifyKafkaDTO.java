@@ -25,7 +25,7 @@ public class NotifyKafkaDTO implements DedupKey {
 
     @Override
     public String getDedupKey(){
-        return userId + ":" + channel + payload.hashCode();
+        return userId + ":" + channel + ":" + payload;
     }
 
     @Override

@@ -7,6 +7,7 @@ import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.kafka.support.Acknowledgment;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
 import java.util.Map;
@@ -20,11 +21,12 @@ public class QueueService {
     private final RedisRateLimiter rateLimiter;
     private final NotifyLogService logService;
     private final FeedbackSender fbSender;
+    private final DeduplicationService deduplicationService;
     private final Map<String, Integer> limits = Map.of(
             "sms", 35, "email", 1, "push", 100
     );
     private final Map<String, BlockingQueue<QueueItem>> queues = Map.of(
-            "sms", new LinkedBlockingQueue<>(100), "email", new LinkedBlockingQueue<>(100), "push", new LinkedBlockingQueue<>(100)
+            "sms", new LinkedBlockingQueue<>(1000), "email", new LinkedBlockingQueue<>(1000), "push", new LinkedBlockingQueue<>(1000)
     );
     @PostConstruct
     public void init(){
@@ -63,17 +65,20 @@ public class QueueService {
         while(true){
             QueueItem item = null;
             try{
-                item = queue.take();
-                int limit = limits.get(channel);
+                item = queue.poll(20, TimeUnit.MILLISECONDS);
+                if(item == null){
+                    continue;
+                }
 
+                int limit = limits.get(channel);
                 while (!rateLimiter.tryAcquire(channel, limit, 2)) {
-                    Thread.sleep(500);
+                    Thread.sleep(20);
                 }
                 item.getProcessor().process(item.getDto());
 
                 item.getAck().acknowledge();
                 logService.logSave(item.getDto());
-
+                deduplicationService.markAsProcessed(item.getDto().getDedupKey());
                 log.debug("Обработано {} сообщение {}", channel, item.getDto().getId());
             } catch (InterruptedException e) {
                 Thread.currentThread().interrupt();
@@ -81,13 +86,28 @@ public class QueueService {
                 throw e;
             }
             catch (Exception e){
-                log.error("Ошибка обработки {} сообщения {}", channel, item.getDto().getId(), e);
-                logService.logFailed(item.getDto());
-                fbSender.sendFeedback(item.getDto());
-                fbSender.sendToDLQ(item.getDto());
-                item.getAck().acknowledge();
-                log.info("Сообщение {} отправлено в DLQ после ошибки", item.getDto().getId());
+                if (item != null) {
+                    log.error("Ошибка обработки {} сообщения {}", channel, item.getDto().getId(), e);
+                    logService.logFailed(item.getDto());
+                    fbSender.sendFeedback(item.getDto());
+                    fbSender.sendToDLQ(item.getDto());
+                    item.getAck().acknowledge();
+                    log.info("Сообщение {} отправлено в DLQ после ошибки", item.getDto().getId());
+                } else {
+                    log.error("Критическая ошибка в воркере {}: {}", channel, e.getMessage(), e);
+                }
             }
         }
+    }
+    @Scheduled(fixedDelay = 5000)
+    public void logQueueSizes() {
+        queues.forEach((channel, queue) -> {
+            int size = queue.size();
+            if (size > 700) {
+                log.warn("Очередь {} заполнена на {} элементов", channel, size);
+            } else if (size > 100) {
+                log.info("Очередь {}: {} элементов", channel, size);
+            }
+        });
     }
 }

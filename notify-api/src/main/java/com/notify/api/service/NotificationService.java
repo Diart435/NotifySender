@@ -2,7 +2,6 @@ package com.notify.api.service;
 
 import com.notify.api.dto.BaseNotificationDTO;
 import com.notify.api.entity.Notification;
-import com.notify.api.entity.User;
 import com.notify.api.interfaces.NotificationCreateStrategy;
 import com.notify.api.mapper.NotificationMapper;
 import com.notify.api.repository.NotificationRepository;
@@ -24,24 +23,12 @@ public class NotificationService {
     private final NotificationRepository notificationRepository;
     private final KafkaProducer kafkaProducer;
     private final NotificationMapper notificationMapper;
-    private final NotificationCreateStrategyFactory strategyFactory;
+    private final NotificationCreateStrategyFactory factory;
     private final UserService userService;
 
     @Transactional
-    public void create(BaseNotificationDTO request, String apiKey) {
-        NotificationCreateStrategy<BaseNotificationDTO> strategy = strategyFactory.getStrategy(request);
-
-        User user = userService.getUserByApiKey(apiKey);
-        Notification saved = null;
-        if(user != null) {
-            saved = notificationRepository.save(strategy.create(request, String.valueOf(user.getId())));
-        }
-        else{
-            saved = notificationRepository.save(strategy.create(request, "ADMIN"));
-        }
-        Message<NotifyKafkaDTO> message = new Message<>(saved.getChannel().toString().toLowerCase(), notificationMapper.toKafkaDTO(saved));
-        kafkaProducer.sendToKafka(message);
-        log.info("Уведомление {} отправлено в топик {}", saved.getId(), message.topic());
+    public void saveNotification(Notification notification) {
+        notificationRepository.save(notification);
     }
 
     @Transactional
@@ -53,5 +40,23 @@ public class NotificationService {
             notification.setRetryCount(dto.getRetryCount());
             notification.setUpdatedAt(LocalDateTime.now());
         }
+    }
+
+    public void sendMessage(Notification saved){
+        Message<NotifyKafkaDTO> message = new Message<>(saved.getChannel().toString().toLowerCase(), notificationMapper.toKafkaDTO(saved));
+        kafkaProducer.sendToKafka(message);
+        log.info("Уведомление {} отправлено в топик {}", saved.getId(), message.topic());
+    }
+
+    public Notification createNotification(BaseNotificationDTO request, String userId){
+        NotificationCreateStrategy<BaseNotificationDTO> strategy = factory.getStrategy(request);
+        Notification notification = null;
+        if(userId != null){
+            notification = strategy.create(request, userId);
+        }
+        else {
+            notification = strategy.create(request, "ADMIN");
+        }
+        return notification;
     }
 }

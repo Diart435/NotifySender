@@ -5,6 +5,7 @@ import com.notify.dto.Message;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.kafka.clients.producer.ProducerRecord;
 import org.springframework.kafka.core.KafkaTemplate;
+import org.springframework.resilience.annotation.Retryable;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -16,6 +17,13 @@ public class KafkaProducer {
         this.kafkaTemplate = kafkaTemplate;
     }
 
+    @Retryable(
+            value = {Exception.class},
+            maxRetries = 3,
+            delay = 500,
+            multiplier = 2.0,
+            maxDelay = 5000
+    )
     public <T extends DedupKey> void sendToKafka(Message<T> message){
         T data = message.data();
 

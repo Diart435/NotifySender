@@ -3,9 +3,9 @@ package com.notify.processor.service.provider.sms;
 import com.notify.processor.dto.SmsPayload;
 import jakarta.annotation.PostConstruct;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
-import org.springframework.http.client.SimpleClientHttpRequestFactory;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestClient;
 
@@ -17,11 +17,8 @@ public class SmsRuProvider extends BaseSmsProvider{
     @Value("${smsru.provider.api.key}")
     private String apiKey;
     private static boolean enabled = false;
-    public SmsRuProvider(){
-        this.restClient = RestClient.builder()
-                .baseUrl("https://sms.ru/")
-                .requestFactory(new SimpleClientHttpRequestFactory())
-                .build();
+    public SmsRuProvider(@Qualifier("smsRuRestClient") RestClient restClient){
+        this.restClient = restClient;
     }
     @PostConstruct
     public void init() {

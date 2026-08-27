@@ -3,7 +3,7 @@ package com.notify.api.controller;
 import com.notify.api.dto.RequestEmailDTO;
 import com.notify.api.dto.RequestPushDTO;
 import com.notify.api.dto.RequestSmsDTO;
-import com.notify.api.service.NotificationService;
+import com.notify.api.service.DeliveryService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
@@ -17,7 +17,7 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/api/notify/send")
 @RequiredArgsConstructor
 public class NotifyController {
-    private final NotificationService notificationService;
+    private final DeliveryService deliveryService;
 
     @Operation(
             summary = "Send a email notification to external APIs",
@@ -30,7 +30,7 @@ public class NotifyController {
     })
     @PostMapping("/email")
     public ResponseEntity<Void> sendNotify(@RequestHeader("X-API-Key") String apiKey, @Valid @RequestBody RequestEmailDTO emailDTO){
-        notificationService.create(emailDTO, apiKey);
+        deliveryService.delivery(emailDTO, apiKey);
         return ResponseEntity.status(HttpStatus.CREATED).build();
     }
 
@@ -45,7 +45,7 @@ public class NotifyController {
     })
     @PostMapping("/sms")
     public ResponseEntity<Void> sendNotify(@RequestHeader("X-API-Key") String apiKey, @Valid @RequestBody RequestSmsDTO smsDTO){
-        notificationService.create(smsDTO, apiKey);
+        deliveryService.delivery(smsDTO, apiKey);
         return ResponseEntity.status(HttpStatus.CREATED).build();
     }
 
@@ -60,7 +60,7 @@ public class NotifyController {
     })
     @PostMapping("/push")
     public ResponseEntity<Void> sendNotify(@RequestHeader("X-API-Key") String apiKey, @Valid @RequestBody RequestPushDTO pushDTO){
-        notificationService.create(pushDTO, apiKey);
+        deliveryService.delivery(pushDTO, apiKey);
         return ResponseEntity.status(HttpStatus.CREATED).build();
     }
 }

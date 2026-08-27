@@ -5,10 +5,10 @@ import com.notify.processor.mapper.FirebaseMapper;
 import com.notify.processor.response.push.FirebaseRequest;
 import jakarta.annotation.PostConstruct;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.DependsOn;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.http.client.SimpleClientHttpRequestFactory;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestClient;
 
@@ -23,11 +23,8 @@ public class FirebaseProvider {
     private final FirebaseInitializer initializer;
     private static boolean enabled = false;
 
-    public FirebaseProvider(FirebaseTokenProvider firebaseTokenProvider, FirebaseInitializer firebaseInitializer, FirebaseMapper firebaseMapper) {
-        this.restClient = RestClient.builder()
-                .baseUrl("https://fcm.googleapis.com/v1/projects/")
-                .requestFactory(new SimpleClientHttpRequestFactory())
-                .build();
+    public FirebaseProvider(@Qualifier("pushRestClient") RestClient restClient, FirebaseTokenProvider firebaseTokenProvider, FirebaseInitializer firebaseInitializer, FirebaseMapper firebaseMapper) {
+        this.restClient = restClient;
         this.firebaseMapper = firebaseMapper;
         this.initializer = firebaseInitializer;
         this.tokenProvider = firebaseTokenProvider;

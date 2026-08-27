@@ -86,7 +86,7 @@ class NotificationCreateServiceTest {
         request.setUserPhone("+79991234567");
         request.setTargetPhone("+79991236567");
         request.setContent("Hello, World!");
-        notificationCreateService.create(request, testUserId);
+        notificationCreateService.saveNotification(notificationCreateService.createNotification(request, testUserId));
 
         Notification saved = notificationRepository.findAll().stream()
                 .filter(n -> n.getUserId().equals(testUserId))

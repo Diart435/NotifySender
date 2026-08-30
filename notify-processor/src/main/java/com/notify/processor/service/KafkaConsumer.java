@@ -2,6 +2,7 @@ package com.notify.processor.service;
 
 import com.notify.dto.NotifyKafkaDTO;
 import com.notify.processor.service.processor.ProcessorFactory;
+import io.micrometer.core.instrument.MeterRegistry;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
@@ -16,7 +17,7 @@ public class KafkaConsumer {
     private final ProcessorFactory factory;
     private final QueueService queueService;
     private final DeduplicationService deduplicationService;
-
+    private final MeterRegistry registry;
 
     @KafkaListener(topics = "sms", groupId = "sms-group", containerFactory = "containerFactory", concurrency = "5")
     public void consumeSmsChannel(ConsumerRecord<String, NotifyKafkaDTO> consumerRecord, Acknowledgment ack) {
@@ -38,6 +39,7 @@ public class KafkaConsumer {
         try {
             String dedupKey = record.value().getDedupKey();
             if(!deduplicationService.isDuplicate(dedupKey)) {
+                registry.counter("notifications.consumed", "channel", channel).increment();
                 NotifyKafkaDTO dto = record.value();
                 queueService.enqueue(channel, dto, factory.getProcessor(channel), ack);
                 log.info("Сообщение {} добавлено в очередь {}", dto.getId(), channel);

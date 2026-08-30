@@ -1,0 +1,22 @@
+global:
+  scrape_interval: 15s
+  evaluation_interval: 15s
+scrape_configs:
+  - job_name: 'consul-services'
+    metrics_path: '/actuator/prometheus'
+    consul_sd_configs:
+      - server: 'consul:8500'
+        services: []
+
+    relabel_configs:
+      - source_labels: [__meta_consul_tags]
+        regex: '.*metrics.*'
+        action: keep
+
+      - source_labels: [__meta_consul_service_address, __meta_consul_service_port]
+        target_label: __address__
+        separator: ':'
+        replacement: '$1:$2'
+
+      - source_labels: [__meta_consul_service]
+        target_label: service

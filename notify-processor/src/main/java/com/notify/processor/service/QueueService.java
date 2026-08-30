@@ -3,6 +3,8 @@ package com.notify.processor.service;
 import com.notify.dto.NotifyKafkaDTO;
 import com.notify.processor.dto.QueueItem;
 import com.notify.processor.interfaces.NotificationProcessor;
+import io.micrometer.core.instrument.MeterRegistry;
+import io.micrometer.core.instrument.Tags;
 import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -22,6 +24,7 @@ public class QueueService {
     private final NotifyLogService logService;
     private final FeedbackSender fbSender;
     private final DeduplicationService deduplicationService;
+    private final MeterRegistry registry;
     private final Map<String, Integer> limits = Map.of(
             "sms", 35, "email", 1, "push", 100
     );
@@ -103,6 +106,10 @@ public class QueueService {
     public void logQueueSizes() {
         queues.forEach((channel, queue) -> {
             int size = queue.size();
+            registry.gauge("queue.size",
+                    Tags.of("channel", channel),
+                    queue,
+                    BlockingQueue::size);
             if (size > 700) {
                 log.warn("Очередь {} заполнена на {} элементов", channel, size);
             } else if (size > 100) {

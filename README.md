@@ -52,3 +52,13 @@ curl -X POST http://localhost:8080/api/notify/sms \
   -H "X-API-Key: <API-ключ>" \
   -d '{"userPhone": "+79991234567", "targetPhone": "+79992345678", "content": "Hello, World!"}'
 ```
+# Мониторинг
+## 1. Перейдите в Grafana по следующей ссылке
+```bash
+http://localhost:3000
+```
+## 2. Настройте дашборд используя следующие метрики:
+- notifications_consumed_total (Метрика принятых consumer сообщений)
+- kafka_consumer_lag (Лаги при доставке kafka)
+- gateway_requests (Количество поступивших запросов)
+- queue_size (Состояние очереди уведомлений к отправке на внешний api. Обновляется раз в 5 секунд)

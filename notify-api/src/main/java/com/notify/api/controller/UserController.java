@@ -27,12 +27,20 @@ public class UserController {
     )
     @ApiResponses(value = {
             @ApiResponse(responseCode = "201", description = "User created"),
-            @ApiResponse(responseCode = "401", description = "Unauthorized")
+            @ApiResponse(responseCode = "400", description = "Bad request"),
+            @ApiResponse(responseCode = "401", description = "Unauthorized"),
+            @ApiResponse(responseCode = "409", description = "Conflict")
     })
     @PostMapping("/add")
     public ResponseEntity<ResponseApiKey> addUser(@Valid @RequestBody RequestRegister register){
         ResponseApiKey response = new ResponseApiKey();
-        response.setApiKey(userService.createUserAndGetApiKey(register.getUsername(), register.getEmail(), register.getPassword()));
-        return ResponseEntity.status(HttpStatus.CREATED).body(response);
+        String apiKey = userService.createUserAndGetApiKey(register.getUsername(), register.getEmail(), register.getPassword());
+        if(apiKey != null) {
+            response.setApiKey(apiKey);
+            return ResponseEntity.status(HttpStatus.CREATED).body(response);
+        }
+        else{
+            return ResponseEntity.status(HttpStatus.CONFLICT).build();
+        }
     }
 }

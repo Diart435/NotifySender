@@ -1,4 +1,4 @@
-package com.notify.api.hander;
+package com.notify.api.handler;
 
 import com.notify.api.enums.Channel;
 import org.springframework.http.HttpStatus;
@@ -11,6 +11,8 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.TimeoutException;
 import java.util.stream.Collectors;
 
 @RestControllerAdvice
@@ -27,5 +29,11 @@ public class GlobalExceptionHandler {
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public Map<String,String> handleHttpMessageNotReadable(HttpMessageNotReadableException ex) {
         return Map.of("error","На выбор представлены каналы: " + Arrays.stream(Channel.values()).map(Enum::name).collect(Collectors.joining(", ")));
+    }
+
+    @ExceptionHandler(exception = {TimeoutException.class, ExecutionException.class})
+    @ResponseStatus(HttpStatus.REQUEST_TIMEOUT)
+    public String handleKafkaException(Exception ex){
+        return "Временная недоступность сервиса, попробуйте позднее";
     }
 }

@@ -50,17 +50,20 @@ public class UserService {
 
     @Transactional
     public String createUserAndGetApiKey(String username, String email, String password){
-        String apiKey = UUID.randomUUID().toString();
-        String hashed = encoder.encode(apiKey);
-        User user = new User();
-        user.setEmail(email);
-        user.setUsername(username);
-        user.setPasswordHash(encoder.encode(password));
-        user.setCreatedAt(LocalDateTime.now());
-        user.setApiKey(hashed);
-        user.setApiKeyLookup(DigestUtils.sha256Hex(apiKey));
-        userRepository.save(user);
-        return apiKey;
+        if(userRepository.findByUsername(username).isEmpty()) {
+            String apiKey = UUID.randomUUID().toString();
+            String hashed = encoder.encode(apiKey);
+            User user = new User();
+            user.setEmail(email);
+            user.setUsername(username);
+            user.setPasswordHash(encoder.encode(password));
+            user.setCreatedAt(LocalDateTime.now());
+            user.setApiKey(hashed);
+            user.setApiKeyLookup(DigestUtils.sha256Hex(apiKey));
+            userRepository.save(user);
+            return apiKey;
+        }
+        return null;
     }
 
     @Transactional(readOnly = true)

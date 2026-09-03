@@ -2,6 +2,7 @@ package com.notify.api.service;
 
 import com.notify.api.dto.BaseNotificationDTO;
 import com.notify.api.entity.Notification;
+import com.notify.api.entity.User;
 import com.notify.api.interfaces.NotificationCreateStrategy;
 import com.notify.api.mapper.NotificationMapper;
 import com.notify.api.repository.NotificationRepository;
@@ -24,7 +25,6 @@ public class NotificationService {
     private final KafkaProducer kafkaProducer;
     private final NotificationMapper notificationMapper;
     private final NotificationCreateStrategyFactory factory;
-    private final UserService userService;
 
     @Transactional
     public void saveNotification(Notification notification) {
@@ -48,11 +48,11 @@ public class NotificationService {
         log.info("Уведомление {} отправлено в топик {}", saved.getId(), message.topic());
     }
 
-    public Notification createNotification(BaseNotificationDTO request, String userId){
+    public Notification createNotification(BaseNotificationDTO request, User user){
         NotificationCreateStrategy<BaseNotificationDTO> strategy = factory.getStrategy(request);
         Notification notification = null;
-        if(userId != null){
-            notification = strategy.create(request, userId);
+        if(user != null){
+            notification = strategy.create(request, user.getId().toString());
         }
         else {
             notification = strategy.create(request, "ADMIN");

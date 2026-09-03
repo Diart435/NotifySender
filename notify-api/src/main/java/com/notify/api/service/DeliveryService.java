@@ -15,7 +15,7 @@ public class DeliveryService {
 
     public void delivery(BaseNotificationDTO request, String apiKey){
         try {
-            Notification notification = notificationService.createNotification(request, userService.getUserByApiKey(apiKey).getId().toString());
+            Notification notification = notificationService.createNotification(request, userService.getUserByApiKey(apiKey));
             notificationService.saveNotification(notification);
             notificationService.sendMessage(notification);
         }

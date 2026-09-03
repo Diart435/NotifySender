@@ -5,12 +5,13 @@ import com.notify.api.dto.RequestSmsDTO;
 import com.notify.api.entity.Notification;
 import com.notify.api.enums.Channel;
 import com.notify.api.repository.NotificationRepository;
-import com.notify.api.service.NotificationService;
+import com.notify.api.service.DeliveryService;
+import com.notify.api.service.UserService;
 import com.notify.dto.NotificationStatus;
 import com.notify.dto.NotifyKafkaDTO;
 import org.apache.kafka.clients.consumer.Consumer;
 import org.apache.kafka.clients.consumer.ConsumerConfig;
-import org.apache.kafka.clients.consumer.ConsumerRecords;
+import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.apache.kafka.common.serialization.StringDeserializer;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -19,11 +20,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.kafka.core.DefaultKafkaConsumerFactory;
 import org.springframework.kafka.core.KafkaTemplate;
-import org.springframework.kafka.test.context.EmbeddedKafka;
 import org.springframework.kafka.test.utils.KafkaTestUtils;
+import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.DynamicPropertyRegistry;
 import org.springframework.test.context.DynamicPropertySource;
-import org.testcontainers.containers.PostgreSQLContainer;
+import org.testcontainers.containers.GenericContainer;
 import org.testcontainers.junit.jupiter.Testcontainers;
 import org.testcontainers.kafka.KafkaContainer;
 import org.testcontainers.utility.DockerImageName;
@@ -31,25 +32,26 @@ import tools.jackson.databind.ObjectMapper;
 
 import java.time.Duration;
 import java.util.Map;
-import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
 @SpringBootTest
 @Testcontainers
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
-@EmbeddedKafka(topics = {"sms", "push", "email"})
-class NotificationCreateServiceTest {
+@ActiveProfiles("test")
+class NotificationCreateTest {
 
-    static PostgreSQLContainer<?> postgres = new PostgreSQLContainer<>("postgres:15")
-            .withDatabaseName("testdb")
-            .withUsername("test")
-            .withPassword("test");
+
+    private static final GenericContainer<?> postgres = new GenericContainer<>("postgres:15")
+            .withExposedPorts(5432)
+            .withEnv("POSTGRES_DB", "testdb")
+            .withEnv("POSTGRES_USER", "test")
+            .withEnv("POSTGRES_PASSWORD", "test");
 
     static KafkaContainer kafka = new KafkaContainer(DockerImageName.parse("apache/kafka:latest"));
 
     @Autowired
-    private NotificationService notificationCreateService;
+    private DeliveryService deliveryService;
 
     @Autowired
     private NotificationRepository notificationRepository;
@@ -57,42 +59,53 @@ class NotificationCreateServiceTest {
     @Autowired
     private KafkaTemplate<String, Object> kafkaTemplate;
 
+    @Autowired
+    private UserService userService;
+
     private final ObjectMapper objectMapper = new ObjectMapper();
+
+    private String apiKey;
 
     private String testUserId;
 
     @BeforeEach
     void setUp() {
-        testUserId = UUID.randomUUID().toString();
         notificationRepository.deleteAll();
+        apiKey = userService.createUserAndGetApiKey("ADMIN", "yo@gmail.com", "1234");
+        testUserId = userService.getUserByApiKey(apiKey).getId().toString();
     }
 
     @DynamicPropertySource
     static void configureProperties(DynamicPropertyRegistry registry) {
-        System.setProperty("docker.host", "tcp://localhost:2375");
 
         postgres.start();
         kafka.start();
 
-        registry.add("spring.datasource.url", postgres::getJdbcUrl);
-        registry.add("spring.datasource.username", postgres::getUsername);
-        registry.add("spring.datasource.password", postgres::getPassword);
+        registry.add("spring.datasource.url", () -> String.format(
+                "jdbc:postgresql://%s:%d/%s",
+                postgres.getHost(),
+                postgres.getFirstMappedPort(),
+                "testdb"
+        ));
+        registry.add("spring.datasource.username",() -> "test");
+        registry.add("spring.datasource.password", () -> "test");
         registry.add("spring.kafka.bootstrap-servers", kafka::getBootstrapServers);
     }
 
     @Test
-    void shouldCreateSmsNotificationAndSendToKafka() {
+    void shouldCreateSmsNotificationAndSendToKafka() throws InterruptedException {
         RequestSmsDTO request = new RequestSmsDTO();
         request.setUserPhone("+79991234567");
         request.setTargetPhone("+79991236567");
         request.setContent("Hello, World!");
-        notificationCreateService.saveNotification(notificationCreateService.createNotification(request, testUserId));
+        deliveryService.delivery(request, apiKey);
 
         Notification saved = notificationRepository.findAll().stream()
                 .filter(n -> n.getUserId().equals(testUserId))
                 .findFirst()
                 .orElseThrow(() -> new AssertionError("Уведомление не найдено в БД"));
 
+        assertThat(saved.getUserId()).isEqualTo(testUserId);
         assertThat(saved.getChannel()).isEqualTo(Channel.SMS);
         assertThat(saved.getStatus()).isEqualTo(NotificationStatus.PENDING);
         assertThat(saved.getPayload()).contains("+79991234567");
@@ -112,10 +125,8 @@ class NotificationCreateServiceTest {
         try (Consumer<String, NotifyKafkaDTO> consumer = factory.createConsumer()) {
             consumer.subscribe(java.util.List.of("sms"));
 
-            ConsumerRecords<String, NotifyKafkaDTO> records = KafkaTestUtils.getRecords(consumer, Duration.ofSeconds(5));
-            assertThat(records).isNotEmpty();
-
-            var record = records.iterator().next();
+            ConsumerRecord<String, NotifyKafkaDTO> record = KafkaTestUtils.getSingleRecord(consumer, "sms", Duration.ofSeconds(5));
+            assertThat(record).isNotNull();
             NotifyKafkaDTO dto = record.value();
 
             assertThat(dto.getUserId()).isEqualTo(testUserId);

@@ -19,7 +19,7 @@ jobs:
           cache: 'maven'
 
       - name: Run tests
-        run: mvn clean compile test -Pprod -T 1C
+        run: mvn clean compile test
 
   build:
     needs: test

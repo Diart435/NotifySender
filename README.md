@@ -8,7 +8,8 @@
 - PostgreSQL 15
 - Consul(Service Mesh)
 - Spring Cloud(API Gateway)
-- Testcontainers
+- Testcontainers, JUnit
+- Prometheus/Grafana
 
 NotifySender предоставляет пользователю более удобный способ взаимодействовать с шлюзами коммуникации(SMS, Email, Push).
 Представляет из себя Anti-corruption layer между сервисами доставки уведомлений и пользователем.
@@ -24,6 +25,10 @@ graph TD
     E --> H[Redis]
     C --> I[PostgreSQL]
     C --> H
+    J[Prometheus] --> B
+    J[Prometheus] --> C
+    J[Prometheus] --> E
+    K[Grafana] --> J
 ```
 # Запуск
 ## 1. Создать файл .env по примеру .env.example, затем заполнить значения
@@ -49,7 +54,7 @@ docker-compose up -d
 Первый запуск длится ~400 секунд, после 30-40 секунд
 ## 4. Отправить запрос
 ```bash
-curl -X POST http://localhost:8080/api/notify/sms \
+curl -X POST http://localhost:8080/api/notify/send/sms \
   -H "Content-Type: application/json" \
   -H "X-API-Key: <API-ключ>" \
   -d '{"userPhone": "+79991234567", "targetPhone": "+79992345678", "content": "Hello, World!"}'

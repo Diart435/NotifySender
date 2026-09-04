@@ -48,7 +48,7 @@ public class PushProcessor implements NotificationProcessor {
             else{
                 log.info("Сообщение не отправлено в push, канал выключен");
                 logService.logFailed(dto);
-                fbSender.sendFeedback(dto);
+                fbSender.sendToDLQ(dto);
             }
         }
         catch (NotDeliveredException e){

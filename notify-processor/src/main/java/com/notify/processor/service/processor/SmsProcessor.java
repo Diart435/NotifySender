@@ -46,7 +46,7 @@ public class SmsProcessor implements NotificationProcessor {
             } else {
                 log.info("Сообщение не отправлено в sms, канал выключен");
                 logService.logFailed(dto);
-                fbSender.sendFeedback(dto);
+                fbSender.sendToDLQ(dto);
             }
         }
         catch (NotDeliveredException e){
